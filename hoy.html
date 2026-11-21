@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi día de hoy · El Refugio</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/el-refugio-borrador-temp/img/icono.png">
+<link rel="stylesheet" href="/el-refugio-borrador-temp/estilos.css">
+</head>
+<body>
+<main class="contenedor" id="contenido">
+  <p class="cargando">Buscando tu día…</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/el-refugio-borrador-temp/js/config.js"></script>
+<script src="/el-refugio-borrador-temp/js/calendario.js"></script>
+<script src="/el-refugio-borrador-temp/js/app.js"></script>
+<script>
+// El enlace que nunca cambia (el de los correos): lleva a cada persona a su paso de hoy.
+// Sin fecha de inicio → la pantalla para elegirla. Antes de empezar o al terminar → inicio.
+(async function () {
+  var H = window.Refugio, raiz = document.getElementById("contenido");
+  var p = await H.guardia(raiz);
+  if (!p) return;
+  var cal = p.calendario, ahora = H.ahora();
+  var paso = cal.pasoActual(ahora);
+  if (paso < 0 || (cal.terminado(ahora) && !p.ver_todo)) { location.replace("/el-refugio-borrador-temp/privado/inicio.html"); return; }
+  // En la madrugada (antes de las 4:00) la persona sigue en la noche del paso anterior
+  if (paso > 0 && ahora.getHours() < 4) { location.replace("/el-refugio-borrador-temp/privado/dia.html?n=" + (paso - 1) + "#noche"); return; }
+  location.replace("/el-refugio-borrador-temp/privado/dia.html?n=" + paso + (ahora.getHours() >= 18 ? "#noche" : ""));
+})();
+</script>
+</body>
+</html>
